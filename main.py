@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from apiCall import InvalidOperationResponse, ValidOperationResponse
+from syslog import write_toFilesys
 
 app = FastAPI()
 
@@ -24,7 +25,7 @@ def validReturn():
         )
 ## error handling arguments
 
-def main_menu():
+def main():
     while True:
         ##client login screen
         print(f"{RED}={RESET}"*60 + f"\n{GREEN}Welcome to OpenX Medic{RESET}\n" + f"{RED}={RESET}"*60)
@@ -35,8 +36,11 @@ def main_menu():
         print(f"{RED}={RESET}"*60)
 
         try:
-            main_menuArg = int(input("Choose option 1-4: "))
+            main_menuArg = int(input("Choose option 1-4: "))    ##No#errorResponse
         except ValueError:
+            ##call the following to generate a log file
+            write_toFilesys(logDetail_1, logDetail_2)
+            ##then call the following to return error response
             invalidReturn()
             continue
 
@@ -64,6 +68,7 @@ def main_menu():
         ################################################################################
         elif main_menuArg == 4:
             print("System shutting-down")
+            break
 
 if __name__ == "__main__":
     main()
