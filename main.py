@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from apiCall import InvalidOperationResponse, ValidOperationResponse
-from syslog import logger, write_toFilesys
+from syslogGenerator import logger, write_toFilesys
+from create_profile import create_usr
 import sys
 
 app = FastAPI()
@@ -108,7 +109,8 @@ def main():
                 
                 elif main_menuArg == 2:
                     logger.log_info("Create Profile selected", menu_arg=2)
-                    print("Create Profile feature coming soon...")
+                    new_user = create_usr()
+                    new_user.usr_form()
                 
                 elif main_menuArg == 3:
                     logger.log_info("Forgot Password selected", menu_arg=3)

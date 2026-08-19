@@ -25,4 +25,3 @@ class ValidOperationResponse:
     @staticmethod
     def usrDisplay(code: int, message: str, detail: str):
         print(f"Success: {code} {message}\nMessage: {detail}")
-

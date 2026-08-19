@@ -2,10 +2,10 @@ import bcrypt
 import random
 import json
 from apiCall import InvalidOperationResponse, ValidOperationResponse
-from dbase import get_db_connection, hash_password, save_user
+from dbase_creds import get_db_connection
 
 class create_usr:
-    def __init__(self, first_name: str=None last_name: str=None user_name: str=None date_of_birt: str=None email: str=None cell_number: str=None password: str=None):
+    def __init__(self, first_name: str=None, last_name: str=None, user_name: str=None, date_of_birth: str=None, email: str=None, cell_number: str=None, password: str=None):
         self.first_name = first_name
         self.last_name = last_name
         self.user_name = user_name
@@ -15,11 +15,11 @@ class create_usr:
         self.password = password
 
     def usr_form(self):
-        print("Please fill in the follow ing form")
+        print("Please fill in the following form")
         try:
             name = input("Enter your name: ").strip().title()
             surname = input("Enter your surname: ").strip().title()
-            
+
             ##auto generate username
             first_char = name[0:2]
             if len(surname) >= 4:
@@ -42,29 +42,38 @@ class create_usr:
             password_bytes = password.encode('utf-8')
             hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
             password_hash = hashed.decode('utf-8')
-            
+
+            ##save the new user to the database
+            self.usrData_toDBase(name, surname, usrname, dob, email, phone, password_hash)
+
             response = {
-                    "status ": "success",
+                    "status": "success",
                     "message": "User profile created successful",
-                    "Name           ": name,
-                    "Surname        ": surname,
-                    "Date of Birth  ": dob,
-                    "Email          ": email,
-                    "Phone number   ": phone
-            })
+                    "Name": name,
+                    "Surname": surname,
+                    "Username": usrname,
+                    "Date of Birth": dob,
+                    "Email": email,
+                    "Phone number": phone
+            }
 
             print(f"Thank you for being part of the family, {usrname}")
             return json.dumps(response, indent=2)
 
         except Exception as e:
-            error_response = InvalidOperationResponse.usrDisplay(
+            InvalidOperationResponse.usrDisplay(
                     400,
                     "Bad Request",
                     "Server cannot process the request"
                 )
-            print(json.dumps(error_response, indent=2))
-            return json.dumps(error_response)
-            
+            print(f"Failed to create profile: {e}")
+            error_response = InvalidOperationResponse.InvalidResponse(
+                    400,
+                    "Bad Request",
+                    str(e)
+                )
+            return error_response
+
     def usrData_toDBase(self, name, surname, usrname, dob, email, phone, password_hash):
         ##write usr_data to dbase
         #connect to dbase
@@ -81,11 +90,10 @@ class create_usr:
         try:
             cursor.execute(sql, values)
             conn.commit()
-            print(...)  ##generate new response altinative to 'user data saved to dbase
+            print("User data saved to dbase")
         except Exception as e:
-            print(...)  ##generate new response altinative to 'user data saved to dbase
+            print(f"Failed to save user data: {e}")
             raise
         finally:
             cursor.close()
             conn.close()
-
