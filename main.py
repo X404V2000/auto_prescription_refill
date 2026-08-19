@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from apiCall import InvalidOperationResponse, ValidOperationResponse
 from syslogGenerator import logger, write_toFilesys
 from create_profile import create_usr
+from login import AuthenticationService
 import sys
 
 app = FastAPI()
@@ -49,9 +50,16 @@ def display_patient_menu():
 
 def handle_login():
     logger.log_info("User attempting to login")
-    
-    ##checks credentials
-    ##For now, just show patient menu
+
+    auth = AuthenticationService()
+    session_token = auth.login()
+
+    if not session_token:
+        logger.log_warning("Login failed — returning to main menu")
+        return
+
+    logger.log_success("Login successful", detail=f"session_token={session_token}")
+
     while True:
         display_patient_menu()
         try:
