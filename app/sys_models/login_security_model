@@ -1,0 +1,42 @@
+┌─────────────────────────────────────────────────────────────────┐
+│                        CLIENT (Frontend)                        │
+├─────────────────────────────────────────────────────────────────┤
+│  1. User submits credentials (username + password)              │
+│  2. Client-side validation (format, length)                     │
+│  3. HTTPS/TLS encryption (in transit)                           │
+│  4. Send to backend API endpoint                                │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    API GATEWAY / LOAD BALANCER                  │
+├─────────────────────────────────────────────────────────────────┤
+│  1. SSL/TLS termination                                         │
+│  2. Rate limiting (prevent brute force)                         │
+│  3. IP filtering / whitelisting                                 │
+│  4. Request validation                                          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    AUTHENTICATION SERVICE                       │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Decrypt request (if encrypted)                              │
+│  2. Validate input (sanitization)                               │
+│  3. Check account lockout status                                │
+│  4. Fetch user from database                                    │
+│  5. Verify password (using secure hashing)                      │
+│  6. Check MFA/2FA if enabled                                    │
+│  7. Generate session token (JWT/Session ID)                     │
+│  8. Log attempt (success/failure)                               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        DATABASE                                 │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Users table with hashed passwords                           │
+│  2. Login attempts tracking                                     │
+│  3. Session storage                                             │
+│  4. Audit logs                                                  │
+└─────────────────────────────────────────────────────────────────┘
